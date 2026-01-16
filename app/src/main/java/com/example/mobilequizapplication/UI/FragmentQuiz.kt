@@ -1,6 +1,7 @@
 package com.example.mobilequizapplication.UI
 
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,8 @@ class FragmentQuiz : Fragment() {
 
     private val viewModel: QuizViewModel by viewModels()
 
+    private var mediaPlayer: MediaPlayer? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,7 +37,6 @@ class FragmentQuiz : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.timeLeft.collect { seconds ->
@@ -73,13 +75,11 @@ class FragmentQuiz : Fragment() {
             }
         }
 
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.score.collectLatest { currentScore ->
                 binding.tvScore.text = "Score: $currentScore"
             }
         }
-
 
         viewLifecycleOwner.lifecycleScope.launch {
             combine(viewModel.selectedAnswer, viewModel.isCorrect) { selected, isCorrect ->
@@ -103,9 +103,14 @@ class FragmentQuiz : Fragment() {
     private fun handleAnswerFeedback(selected: String, isCorrect: Boolean) {
         val buttons = listOf(binding.btnOption1, binding.btnOption2, binding.btnOption3, binding.btnOption4)
 
+        if (isCorrect) {
+            playSound(R.raw.correct_sound)
+        } else {
+            playSound(R.raw.wrong_sound)
+        }
+
         buttons.forEach { button ->
             button.isEnabled = false
-
 
             if (button.text == selected && button.visibility == View.VISIBLE) {
                 if (isCorrect) {
@@ -116,12 +121,23 @@ class FragmentQuiz : Fragment() {
             }
         }
 
-
         binding.root.postDelayed({
             resetButtonStyles()
             viewModel.moveToNext()
             viewModel.startTimer()
         }, 1000)
+    }
+
+
+    private fun playSound(resId: Int) {
+        try {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = MediaPlayer.create(requireContext(), resId)
+            mediaPlayer?.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun resetButtonStyles() {
@@ -141,14 +157,7 @@ class FragmentQuiz : Fragment() {
             binding.tvQuestionText.text = currentQuestion.text
 
             val answers = currentQuestion.allAnswers.shuffled()
-
-
-            val buttons = listOf(
-                binding.btnOption1,
-                binding.btnOption2,
-                binding.btnOption3,
-                binding.btnOption4
-            )
+            val buttons = listOf(binding.btnOption1, binding.btnOption2, binding.btnOption3, binding.btnOption4)
 
             buttons.forEachIndexed { i, button ->
                 val answer = answers.getOrNull(i)
@@ -156,7 +165,6 @@ class FragmentQuiz : Fragment() {
                     button.text = answer
                     button.visibility = View.VISIBLE
                 } else {
-
                     button.text = ""
                     button.visibility = View.GONE
                 }
@@ -178,6 +186,9 @@ class FragmentQuiz : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        mediaPlayer?.release()
+        mediaPlayer = null
         _binding = null
     }
 
