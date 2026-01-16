@@ -134,6 +134,7 @@ class FragmentQuiz : Fragment() {
             mediaPlayer?.stop()
             mediaPlayer?.release()
             mediaPlayer = MediaPlayer.create(requireContext(), resId)
+            mediaPlayer?.setVolume(1.0f, 1.0f)
             mediaPlayer?.start()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -177,7 +178,8 @@ class FragmentQuiz : Fragment() {
     private fun navigateToResult() {
         if (!isAdded) return
         val finalScore = viewModel.score.value.toString()
-        val fragmentResult = FragmentResult.newInstance(finalScore, "")
+        val totalQuestions = viewModel.questions.value.size.toString()
+        val fragmentResult = FragmentResult.newInstance(finalScore, totalQuestions)
         val transaction = parentFragmentManager.beginTransaction()
         transaction.replace(R.id.main, fragmentResult)
         transaction.addToBackStack(null)
