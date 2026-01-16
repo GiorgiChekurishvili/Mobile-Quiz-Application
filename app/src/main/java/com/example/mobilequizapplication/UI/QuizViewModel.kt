@@ -1,5 +1,7 @@
 package com.example.mobilequizapplication.UI
 
+import android.os.CountDownTimer
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobilequizapplication.Data.Repository.QuestionRepository
@@ -8,26 +10,31 @@ import com.example.mobilequizapplication.Domain.Model.Question
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class QuizViewModel @Inject constructor(
-    private val repository: QuestionRepository // Injecting your friend's repository
+    private val repository: QuestionRepository
 ) : ViewModel() {
 
-    // Task 5: The list of questions fetched from API
     private val _questions = MutableStateFlow<List<Question>>(emptyList())
     val questions: StateFlow<List<Question>> = _questions
 
-    // Task 6 & "Next Question": Tracker for the current question
     private val _currentIndex = MutableStateFlow(0)
     val currentIndex: StateFlow<Int> = _currentIndex
 
-    // Task 1: The user's score
     private val _score = MutableStateFlow(0)
     val score: StateFlow<Int> = _score
 
+
+    private val _selectedAnswer = MutableStateFlow<String?>(null)
+    val selectedAnswer = _selectedAnswer.asStateFlow()
+
+    private val _isCorrect = MutableStateFlow<Boolean?>(null)
+    val isCorrect = _isCorrect.asStateFlow()
+    // --------------------------------------
 
     fun loadQuestionsByCategory(category: Category) {
         viewModelScope.launch {
@@ -36,22 +43,60 @@ class QuizViewModel @Inject constructor(
         }
     }
 
-
     fun submitAnswer(selectedAnswer: String) {
         val currentQuestion = _questions.value.getOrNull(_currentIndex.value)
 
         if (currentQuestion != null) {
+            _selectedAnswer.value = selectedAnswer // Track what was clicked
 
-            if (selectedAnswer == currentQuestion.correctAnswer) {
+            val correct = selectedAnswer == currentQuestion.correctAnswer
+            _isCorrect.value = correct // Track if it was right
+
+            if (correct) {
                 _score.value += 10
             }
 
-            // Next Question functionality
-            if (_currentIndex.value < _questions.value.size - 1) {
-                _currentIndex.value += 1
-            } else {
-                // TODO: Handle Quiz Completed (Navigate to FragmentResult)
-            }
+
         }
+    }
+
+    fun moveToNext() {
+
+        _selectedAnswer.value = null
+        _isCorrect.value = null
+
+        if (_currentIndex.value < _questions.value.size - 1) {
+            _currentIndex.value += 1
+        } else {
+
+            _currentIndex.value = _questions.value.size
+        }
+    }
+
+    private var timer: CountDownTimer? = null
+    private val _timeLeft = MutableStateFlow(20)
+    val timeLeft: StateFlow<Int> = _timeLeft
+
+    fun startTimer() {
+        timer?.cancel()
+        _timeLeft.value = 30
+
+        timer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                _timeLeft.value = (millisUntilFinished / 1000).toInt()
+            }
+
+            override fun onFinish() {
+                _timeLeft.value = 0
+
+                submitAnswer("")
+            }
+        }.start()
+    }
+
+
+    override fun onCleared() {
+        super.onCleared()
+        timer?.cancel()
     }
 }

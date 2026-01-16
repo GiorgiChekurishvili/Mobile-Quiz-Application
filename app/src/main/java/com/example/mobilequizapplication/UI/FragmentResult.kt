@@ -17,7 +17,6 @@ class FragmentResult : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         return inflater.inflate(R.layout.fragment_result, container, false)
     }
 
@@ -25,29 +24,31 @@ class FragmentResult : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        val score = arguments?.getString("param1") ?: "0"
+        val finalScore = arguments?.getString("param1") ?: "0"
 
 
         val tvScoreResult = view.findViewById<TextView>(R.id.tvScoreResult)
 
 
-        tvScoreResult.text = score
-
+        tvScoreResult.text = "Your Score: $finalScore"
 
         val btnHome = view.findViewById<Button>(R.id.btnBackHome)
         btnHome.setOnClickListener {
 
-            parentFragmentManager.popBackStack()
+            parentFragmentManager.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main, FragmentHome.newInstance())
+                .commit()
         }
     }
 
     companion object {
-
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(score: String, param2: String) =
             FragmentResult().apply {
                 arguments = Bundle().apply {
-                    putString("param1", param1)
+                    putString("param1", score)
                     putString("param2", param2)
                 }
             }
