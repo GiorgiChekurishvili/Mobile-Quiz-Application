@@ -35,13 +35,10 @@ class FragmentQuiz : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // --- TIMER OBSERVATION ---
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.timeLeft.collect { seconds ->
-                // Update the ProgressBar (assuming max is 30 in XML)
                 binding.quizTimer.progress = seconds
-
-                // Visual feedback: change color to red if time is low (under 5 seconds)
                 if (seconds < 5) {
                     binding.quizTimer.setIndicatorColor(Color.RED)
                 } else {
@@ -59,31 +56,31 @@ class FragmentQuiz : Fragment() {
 
         viewModel.loadQuestionsByCategory(category)
 
-        // Observe Questions and Start Timer when data arrives
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.questions.collectLatest { questions ->
                 if (questions.isNotEmpty()) {
                     updateUI()
-                    viewModel.startTimer() // Start timer for the first question
+                    viewModel.startTimer()
                 }
             }
         }
 
-        // Observe Index (Updates the text when moving to next question)
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.currentIndex.collectLatest {
                 updateUI()
             }
         }
 
-        // Task 1: Observe Score
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.score.collectLatest { currentScore ->
                 binding.tvScore.text = "Score: $currentScore"
             }
         }
 
-        // Visual Feedback Logic (Green/Red)
+
         viewLifecycleOwner.lifecycleScope.launch {
             combine(viewModel.selectedAnswer, viewModel.isCorrect) { selected, isCorrect ->
                 Pair(selected, isCorrect)
@@ -94,7 +91,7 @@ class FragmentQuiz : Fragment() {
             }
         }
 
-        // Setup Answer Buttons
+
         val buttons = listOf(binding.btnOption1, binding.btnOption2, binding.btnOption3, binding.btnOption4)
         buttons.forEach { button ->
             button.setOnClickListener {
@@ -107,9 +104,10 @@ class FragmentQuiz : Fragment() {
         val buttons = listOf(binding.btnOption1, binding.btnOption2, binding.btnOption3, binding.btnOption4)
 
         buttons.forEach { button ->
-            button.isEnabled = false // Disable to prevent multiple clicks
+            button.isEnabled = false
 
-            if (button.text == selected) {
+
+            if (button.text == selected && button.visibility == View.VISIBLE) {
                 if (isCorrect) {
                     button.setBackgroundColor(Color.GREEN)
                 } else {
@@ -118,11 +116,11 @@ class FragmentQuiz : Fragment() {
             }
         }
 
-        // Wait 1 second, then reset and move to next question
+
         binding.root.postDelayed({
             resetButtonStyles()
             viewModel.moveToNext()
-            viewModel.startTimer() // RESTART TIMER for the next question
+            viewModel.startTimer()
         }, 1000)
     }
 
@@ -143,10 +141,26 @@ class FragmentQuiz : Fragment() {
             binding.tvQuestionText.text = currentQuestion.text
 
             val answers = currentQuestion.allAnswers.shuffled()
-            binding.btnOption1.text = answers.getOrNull(0) ?: ""
-            binding.btnOption2.text = answers.getOrNull(1) ?: ""
-            binding.btnOption3.text = answers.getOrNull(2) ?: ""
-            binding.btnOption4.text = answers.getOrNull(3) ?: ""
+
+
+            val buttons = listOf(
+                binding.btnOption1,
+                binding.btnOption2,
+                binding.btnOption3,
+                binding.btnOption4
+            )
+
+            buttons.forEachIndexed { i, button ->
+                val answer = answers.getOrNull(i)
+                if (answer != null) {
+                    button.text = answer
+                    button.visibility = View.VISIBLE
+                } else {
+
+                    button.text = ""
+                    button.visibility = View.GONE
+                }
+            }
         } else if (questions.isNotEmpty()) {
             navigateToResult()
         }
