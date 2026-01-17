@@ -4,6 +4,7 @@ import android.os.CountDownTimer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mobilequizapplication.Data.Repository.Interface.IQuestionRepository
 import com.example.mobilequizapplication.Data.Repository.QuestionRepository
 import com.example.mobilequizapplication.Domain.Enum.Category
 import com.example.mobilequizapplication.Domain.Model.Question
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuizViewModel @Inject constructor(
-    private val repository: QuestionRepository
+    private val repository: IQuestionRepository
 ) : ViewModel() {
 
     private val _questions = MutableStateFlow<List<Question>>(emptyList())
@@ -38,7 +39,7 @@ class QuizViewModel @Inject constructor(
 
     fun loadQuestionsByCategory(category: Category) {
         viewModelScope.launch {
-            val fetchedQuestions = repository.getQuestionsByCategory(10, category)
+            val fetchedQuestions = repository.getQuestionsByCategory(category = category)
             _questions.value = fetchedQuestions
         }
     }

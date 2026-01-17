@@ -11,7 +11,7 @@ import com.example.mobilequizapplication.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FragmentResult : Fragment() {
+class FragmentResult() : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,12 +25,13 @@ class FragmentResult : Fragment() {
 
 
         val finalScore = arguments?.getString("param1") ?: "0"
+        val totalQuestions = (arguments?.getString("param2")?.toIntOrNull() ?: 0) * 10
 
 
         val tvScoreResult = view.findViewById<TextView>(R.id.tvScoreResult)
 
 
-        tvScoreResult.text = "Your Score: $finalScore"
+        tvScoreResult.text = "Your Score: $finalScore/$totalQuestions"
 
         val btnHome = view.findViewById<Button>(R.id.btnBackHome)
         btnHome.setOnClickListener {
