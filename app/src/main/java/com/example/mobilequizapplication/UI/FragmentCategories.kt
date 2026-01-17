@@ -10,14 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mobilequizapplication.Domain.Enum.Category
 import com.example.mobilequizapplication.R
 
-class FragmentHome : Fragment() {
+class FragmentCategories : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_categories, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,6 +54,6 @@ class FragmentHome : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = FragmentHome()
+        fun newInstance() = FragmentCategories()
     }
 }

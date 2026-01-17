@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.main, FragmentHome.newInstance())
+                .replace(R.id.main, FragmentCategories.newInstance())
                 .commit()
         }
     }}

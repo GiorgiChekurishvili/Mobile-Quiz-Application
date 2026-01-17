@@ -39,7 +39,7 @@ class FragmentResult() : Fragment() {
             parentFragmentManager.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main, FragmentHome.newInstance())
+                .replace(R.id.main, FragmentCategories.newInstance())
                 .commit()
         }
     }
