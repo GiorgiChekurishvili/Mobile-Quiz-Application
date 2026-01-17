@@ -4,4 +4,19 @@
     <color name="white">#FFFFFFFF</color>
     <color name="bottom_nav_item_color">#2979FF</color>
     <color name="gray">#9E9E9E</color>
+    <color name="bg_white">#FFFFFF</color>
+    <color name="text_dark">#1A1E29</color>
+
+    <color name="topic_bg">#E3F2FD</color>
+    <color name="topic_text">#2196F3</color>
+
+    <color name="easy_top">#4CD97B</color>
+    <color name="easy_bottom">#3DB866</color>
+
+    <color name="medium_top">#FF9F40</color>
+    <color name="medium_bottom">#E68A2E</color>
+
+    <color name="hard_top">#FF5E63</color>
+    <color name="hard_bottom">#D9454A</color>
+
 </resources>

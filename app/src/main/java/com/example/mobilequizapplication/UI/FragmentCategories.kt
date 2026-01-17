@@ -22,31 +22,26 @@ class FragmentCategories : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val rvCategories = view.findViewById<RecyclerView>(R.id.rvCategories)
-
-        // 1. Set Layout Manager to Grid (2 columns)
+        val rvCategories = view.findViewById<RecyclerView>(R.id.categoriesRecyclerView)
         rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
-
-        // 2. Prepare Data
         val categoryList = Category.entries
 
-        // 3. Set Adapter
         val adapter = CategoriesAdapter(categoryList) { selectedCategory ->
-            navigateToQuiz(selectedCategory)
+            navigateToDifficultySelection(selectedCategory)
         }
 
         rvCategories.adapter = adapter
     }
 
-    private fun navigateToQuiz(category: Category) {
-        // Ensure FragmentQuiz exists and accepts these params
-        val fragmentQuiz = FragmentQuiz.newInstance(category.name, "")
+    private fun navigateToDifficultySelection(category: Category) {
+        val difficultyFragment = DifficultyFragment.newInstance(category.displayName)
 
         parentFragmentManager.beginTransaction()
-            .replace(R.id.main, fragmentQuiz)
+            .replace(R.id.main, difficultyFragment)
             .addToBackStack(null)
             .commit()
     }
+
 
     companion object {
         @JvmStatic

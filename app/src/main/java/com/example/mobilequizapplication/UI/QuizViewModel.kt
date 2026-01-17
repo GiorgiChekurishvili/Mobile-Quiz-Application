@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mobilequizapplication.Data.Repository.Interface.IQuestionRepository
 import com.example.mobilequizapplication.Data.Repository.QuestionRepository
 import com.example.mobilequizapplication.Domain.Enum.Category
+import com.example.mobilequizapplication.Domain.Enum.Difficulty
 import com.example.mobilequizapplication.Domain.Model.Question
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,23 +36,34 @@ class QuizViewModel @Inject constructor(
 
     private val _isCorrect = MutableStateFlow<Boolean?>(null)
     val isCorrect = _isCorrect.asStateFlow()
-    // --------------------------------------
 
-    fun loadQuestionsByCategory(category: Category) {
+    fun loadQuestions(categoryName: String, difficultyName: String) {
+        var category = Category.fromDisplayName(categoryName)
         viewModelScope.launch {
-            val fetchedQuestions = repository.getQuestionsByCategory(category = category)
+            val categoryEnum = Category.entries.find {
+                it.name.equals(category?.name, ignoreCase = true)
+            } ?: Category.GeneralKnowledge
+
+            val difficultyEnum = Difficulty.entries.find {
+                it.name.equals(difficultyName, ignoreCase = true)
+            } ?: Difficulty.Medium
+
+            val fetchedQuestions = repository.getQuestionsByDifficultyAndCategory(
+                category = categoryEnum,
+                difficulty = difficultyEnum
+            )
+
             _questions.value = fetchedQuestions
         }
     }
-
     fun submitAnswer(selectedAnswer: String) {
         val currentQuestion = _questions.value.getOrNull(_currentIndex.value)
 
         if (currentQuestion != null) {
-            _selectedAnswer.value = selectedAnswer // Track what was clicked
+            _selectedAnswer.value = selectedAnswer
 
             val correct = selectedAnswer == currentQuestion.correctAnswer
-            _isCorrect.value = correct // Track if it was right
+            _isCorrect.value = correct
 
             if (correct) {
                 _score.value += 10
@@ -80,7 +92,6 @@ class QuizViewModel @Inject constructor(
 
     fun startTimer() {
         timer?.cancel()
-        _timeLeft.value = 30
 
         timer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {

@@ -50,5 +50,13 @@ enum class Category(val id: Int, val displayName: String) {
     @SerializedName("Entertainment: Japanese Anime &amp; Manga")
     AnimeAndManga(31, "Anime And Manga"),
     @SerializedName("Entertainment: Cartoon &amp; Animations")
-    CartoonAndAnimations(32, "Cartoon And Animations")
+    CartoonAndAnimations(32, "Cartoon And Animations");
+
+    companion object {
+        fun fromDisplayName(displayName: String): Category? {
+            return entries.firstOrNull {
+                it.displayName.equals(displayName, ignoreCase = true)
+            }
+        }
+    }
 }
