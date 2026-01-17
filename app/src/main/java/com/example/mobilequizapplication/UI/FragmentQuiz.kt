@@ -50,6 +50,10 @@ class FragmentQuiz : Fragment() {
         }
 
         val categoryName = arguments?.getString("category_name") ?: "GeneralKnowledge"
+        val difficultyName = arguments?.getString("difficulty") ?: "Medium"
+        if (viewModel.questions.value.isEmpty()) {
+            viewModel.loadQuestions(categoryName, difficultyName)
+        }
         val category = try {
             Category.valueOf(categoryName)
         } catch (e: Exception) {
@@ -196,10 +200,11 @@ class FragmentQuiz : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(categoryName: String, param2: String) =
+        fun newInstance(categoryName: String, difficulty: String) =
             FragmentQuiz().apply {
                 arguments = Bundle().apply {
                     putString("category_name", categoryName)
+                    putString("difficulty", difficulty)
                 }
             }
     }
