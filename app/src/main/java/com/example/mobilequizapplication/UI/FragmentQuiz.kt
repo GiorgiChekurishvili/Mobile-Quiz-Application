@@ -29,6 +29,7 @@ class FragmentQuiz : Fragment() {
 
     private var mediaPlayer: MediaPlayer? = null
 
+    private var startTime: Long = 0
     data class OptionView(
         val card: MaterialCardView,
         val text: TextView,
@@ -54,7 +55,7 @@ class FragmentQuiz : Fragment() {
             OptionView(binding.btnOption3, binding.tvOption3, Color.parseColor("#B9F6CA")), // Vibrant Green
             OptionView(binding.btnOption4, binding.tvOption4, Color.parseColor("#FFFF8D"))  // Vibrant Yellow
         )
-
+        startTime = System.currentTimeMillis()
         optionViews.forEach { option ->
             option.card.setOnClickListener {
                 viewModel.submitAnswer(option.text.text.toString())
@@ -192,9 +193,19 @@ class FragmentQuiz : Fragment() {
 
     private fun navigateToResult() {
         if (!isAdded) return
+
+        val endTime = System.currentTimeMillis()
+        val durationInMillis = endTime - startTime
+
+        val minutes = (durationInMillis / 1000) / 60
+        val seconds = (durationInMillis / 1000) % 60
+        val timeFormatted = String.format("%02d:%02dm", minutes, seconds)
+
         val finalScore = viewModel.score.value.toString()
         val totalQuestions = viewModel.questions.value.size.toString()
-        val fragmentResult = FragmentResult.newInstance(finalScore, totalQuestions)
+
+        val fragmentResult = FragmentResult.newInstance(finalScore, totalQuestions, timeFormatted)
+
         val transaction = parentFragmentManager.beginTransaction()
         transaction.replace(R.id.main, fragmentResult)
         transaction.addToBackStack(null)

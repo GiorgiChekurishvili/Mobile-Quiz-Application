@@ -67,11 +67,11 @@
 
             <ImageView
                 android:id="@+id/iconEasy"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginBottom="6dp"
-                android:src="@drawable/ic_chick"
+                android:src="@drawable/easy"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -123,11 +123,11 @@
 
             <ImageView
                 android:id="@+id/iconMedium"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginBottom="6dp"
-                android:src="@drawable/ic_star"
+                android:src="@drawable/medium"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -178,11 +178,11 @@
 
             <ImageView
                 android:id="@+id/iconHard"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginBottom="6dp"
-                android:src="@drawable/ic_lightning"
+                android:src="@drawable/hard"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
