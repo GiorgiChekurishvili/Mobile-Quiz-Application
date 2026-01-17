@@ -11,15 +11,15 @@ enum class Category(val id: Int, val displayName: String) {
     Film(11, "Movies"),
     @SerializedName("Entertainment: Music")
     Music(12, "Music"),
-    @SerializedName("Entertainment: Musicals & Theatres")
-    MusicalsAndTheatres(13, "Musical And Theatres"),
+    @SerializedName("Entertainment: Musicals &amp; Theatres")
+    MusicalsAndTheatres(13, "Musicals And Theatres"),
     @SerializedName("Entertainment: Television")
     Television(14, "Television"),
     @SerializedName("Entertainment: Video Games")
     VideoGames(15, "Video Games"),
     @SerializedName("Entertainment: Board Games")
     BoardGames(16, "Board Games"),
-    @SerializedName("Science & Nature")
+    @SerializedName("Science &amp; Nature")
     ScienceAndNature(17, "Science And Nature"),
     @SerializedName("Science: Computers")
     Computers(18, "Computers"),
@@ -47,8 +47,8 @@ enum class Category(val id: Int, val displayName: String) {
     Comics(29, "Comics"),
     @SerializedName("Entertainment: Gadgets")
     Gadgets(30, "Gadgets"),
-    @SerializedName("Entertainment: Japanese Anime & Manga")
+    @SerializedName("Entertainment: Japanese Anime &amp; Manga")
     AnimeAndManga(31, "Anime And Manga"),
-    @SerializedName("Entertainment: Cartoon & Animations")
+    @SerializedName("Entertainment: Cartoon &amp; Animations")
     CartoonAndAnimations(32, "Cartoon And Animations")
 }
