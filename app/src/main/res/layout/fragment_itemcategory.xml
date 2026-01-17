@@ -4,39 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    tools:context=".UI.FragmentItemcategory">
-
+    android:padding="8dp">
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
         app:cardCornerRadius="24dp"
-        app:cardElevation="2dp"
+        app:cardElevation="4dp"
         app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="24dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <ImageView
                 android:id="@+id/ivCategoryImage"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:src="@drawable/avatar_placeholder"
-                tools:ignore="ContentDescription" />
+                android:contentDescription="@null"
+                android:scaleType="fitCenter" />
 
             <TextView
                 android:id="@+id/tvCategoryName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Category Name"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="8dp"
+                android:text="Category"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

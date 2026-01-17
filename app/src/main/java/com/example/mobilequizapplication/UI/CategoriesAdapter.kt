@@ -16,12 +16,12 @@ class CategoriesAdapter(
 ) : RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>() {
 
     class CategoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
         val categoryName: TextView = view.findViewById(R.id.tvCategoryName)
         val categoryImage: ImageView = view.findViewById(R.id.ivCategoryImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
+        // UPDATE: This must match the name of the XML file we fixed earlier (item_category)
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.fragment_itemcategory, parent, false)
         return CategoryViewHolder(view)
@@ -29,14 +29,17 @@ class CategoriesAdapter(
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val category = categories[position]
-        holder.categoryName.text = category.displayName
 
+        // 1. Set the Name
+        holder.categoryName.text = category.displayName // Keeping your usage of displayName
 
+        // 2. Load the Image (Keeping your Glide logic)
         Glide.with(holder.itemView.context)
             .load("https://api.dicebear.com/7.x/bottts/png?seed=${category.name}")
             .placeholder(R.drawable.avatar_placeholder)
             .into(holder.categoryImage)
 
+        // 3. Handle Clicks
         holder.itemView.setOnClickListener {
             onCategoryClick(category)
         }

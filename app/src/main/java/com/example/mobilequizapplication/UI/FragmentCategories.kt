@@ -1,10 +1,10 @@
 package com.example.mobilequizapplication.UI
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobilequizapplication.Domain.Enum.Category
@@ -16,34 +16,30 @@ class FragmentCategories : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         return inflater.inflate(R.layout.fragment_categories, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val rvCategories = view.findViewById<RecyclerView>(R.id.rvCategories)
 
-        val rvCategories = view.findViewById<RecyclerView>(R.id.categoriesRecyclerView)
-
-
+        // 1. Set Layout Manager to Grid (2 columns)
         rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
 
-
+        // 2. Prepare Data
         val categoryList = Category.entries
 
-
+        // 3. Set Adapter
         val adapter = CategoriesAdapter(categoryList) { selectedCategory ->
-
             navigateToQuiz(selectedCategory)
         }
-
 
         rvCategories.adapter = adapter
     }
 
     private fun navigateToQuiz(category: Category) {
-
+        // Ensure FragmentQuiz exists and accepts these params
         val fragmentQuiz = FragmentQuiz.newInstance(category.name, "")
 
         parentFragmentManager.beginTransaction()
