@@ -29,7 +29,7 @@ class CategoriesAdapter(
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val category = categories[position]
-        holder.categoryName.text = category.name
+        holder.categoryName.text = category.displayName
 
 
         Glide.with(holder.itemView.context)
