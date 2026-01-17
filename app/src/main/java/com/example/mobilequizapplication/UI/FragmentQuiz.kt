@@ -6,13 +6,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.mobilequizapplication.Domain.Enum.Category
 import com.example.mobilequizapplication.R
 import com.example.mobilequizapplication.databinding.FragmentQuizBinding
+import com.google.android.material.card.MaterialCardView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -27,6 +29,14 @@ class FragmentQuiz : Fragment() {
 
     private var mediaPlayer: MediaPlayer? = null
 
+    data class OptionView(
+        val card: MaterialCardView,
+        val text: TextView,
+        val defaultColor: Int
+    )
+
+    private lateinit var optionViews: List<OptionView>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,30 +48,42 @@ class FragmentQuiz : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.timeLeft.collect { seconds ->
-                binding.quizTimer.progress = seconds
-                if (seconds < 5) {
-                    binding.quizTimer.setIndicatorColor(Color.RED)
-                } else {
-                    binding.quizTimer.setIndicatorColor(Color.BLUE)
-                }
+        optionViews = listOf(
+            OptionView(binding.btnOption1, binding.tvOption1, Color.parseColor("#FF80AB")), // Vibrant Pink
+            OptionView(binding.btnOption2, binding.tvOption2, Color.parseColor("#80D8FF")), // Vibrant Blue
+            OptionView(binding.btnOption3, binding.tvOption3, Color.parseColor("#B9F6CA")), // Vibrant Green
+            OptionView(binding.btnOption4, binding.tvOption4, Color.parseColor("#FFFF8D"))  // Vibrant Yellow
+        )
+
+        optionViews.forEach { option ->
+            option.card.setOnClickListener {
+                viewModel.submitAnswer(option.text.text.toString())
             }
         }
 
-        val categoryName = arguments?.getString("category_name") ?: "GeneralKnowledge"
+        val categoryName = arguments?.getString("category_name") ?: "General"
         val difficultyName = arguments?.getString("difficulty") ?: "Medium"
+
+        binding.tvCategoryName.text = categoryName
+
         if (viewModel.questions.value.isEmpty()) {
             viewModel.loadQuestions(categoryName, difficultyName)
         }
-        val category = try {
-            Category.valueOf(categoryName)
-        } catch (e: Exception) {
-            Category.GeneralKnowledge
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.timeLeft.collect { seconds ->
+                binding.quizTimer.progress = seconds
+                binding.tvTimer.text = "00:${seconds.toString().padStart(2, '0')}"
+
+                if (seconds < 5) {
+                    binding.quizTimer.setIndicatorColor(Color.RED)
+                    binding.tvTimer.setTextColor(Color.RED)
+                } else {
+                    binding.quizTimer.setIndicatorColor(Color.parseColor("#FF9800")) // Orange
+                    binding.tvTimer.setTextColor(Color.parseColor("#2D2D2D"))
+                }
+            }
         }
-
-        viewModel.loadQuestionsByCategory(category)
-
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.questions.collectLatest { questions ->
@@ -71,7 +93,6 @@ class FragmentQuiz : Fragment() {
                 }
             }
         }
-
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.currentIndex.collectLatest {
@@ -94,84 +115,74 @@ class FragmentQuiz : Fragment() {
                 }
             }
         }
-
-
-        val buttons = listOf(binding.btnOption1, binding.btnOption2, binding.btnOption3, binding.btnOption4)
-        buttons.forEach { button ->
-            button.setOnClickListener {
-                viewModel.submitAnswer(button.text.toString())
-            }
-        }
     }
 
     private fun handleAnswerFeedback(selected: String, isCorrect: Boolean) {
-        val buttons = listOf(binding.btnOption1, binding.btnOption2, binding.btnOption3, binding.btnOption4)
-
         if (isCorrect) {
             playSound(R.raw.correct_sound)
         } else {
             playSound(R.raw.wrong_sound)
         }
 
-        buttons.forEach { button ->
-            button.isEnabled = false
+        optionViews.forEach { option ->
+            option.card.isEnabled = false
 
-            if (button.text == selected && button.visibility == View.VISIBLE) {
+            if (option.text.text == selected) {
                 if (isCorrect) {
-                    button.setBackgroundColor(Color.GREEN)
+                    option.card.setCardBackgroundColor(Color.parseColor("#2E7D32"))
                 } else {
-                    button.setBackgroundColor(Color.RED)
+                    option.card.setCardBackgroundColor(Color.parseColor("#C62828"))
                 }
+                option.text.setTextColor(Color.WHITE)
+
+            } else {
+                option.card.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
+                option.text.setTextColor(Color.parseColor("#BDBDBD"))
             }
         }
 
-        binding.root.postDelayed({
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(1000)
             resetButtonStyles()
             viewModel.moveToNext()
             viewModel.startTimer()
-        }, 1000)
-    }
-
-
-    private fun playSound(resId: Int) {
-        try {
-            mediaPlayer?.stop()
-            mediaPlayer?.release()
-            mediaPlayer = MediaPlayer.create(requireContext(), resId)
-            mediaPlayer?.setVolume(1.0f, 1.0f)
-            mediaPlayer?.start()
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
     private fun resetButtonStyles() {
-        val buttons = listOf(binding.btnOption1, binding.btnOption2, binding.btnOption3, binding.btnOption4)
-        buttons.forEach { button ->
-            button.isEnabled = true
-            button.setBackgroundColor(Color.TRANSPARENT)
+        optionViews.forEach { option ->
+            option.card.isEnabled = true
+
+            option.card.setCardBackgroundColor(option.defaultColor)
+
+            option.text.setTextColor(Color.parseColor("#2D2D2D"))
         }
     }
 
     private fun updateUI() {
+        resetButtonStyles()
+
         val questions = viewModel.questions.value
         val index = viewModel.currentIndex.value
 
         if (index < questions.size) {
             val currentQuestion = questions[index]
+
             binding.tvQuestionText.text = currentQuestion.text
 
-            val answers = currentQuestion.allAnswers.shuffled()
-            val buttons = listOf(binding.btnOption1, binding.btnOption2, binding.btnOption3, binding.btnOption4)
+            binding.tvQuestionCount.text = "QUESTION ${index + 1} OF ${questions.size}"
 
-            buttons.forEachIndexed { i, button ->
+            val answers = currentQuestion.allAnswers.shuffled()
+
+            optionViews.forEachIndexed { i, option ->
                 val answer = answers.getOrNull(i)
                 if (answer != null) {
-                    button.text = answer
-                    button.visibility = View.VISIBLE
+                    option.text.text = answer
+                    option.card.visibility = View.VISIBLE
+                    option.card.isEnabled = true
                 } else {
-                    button.text = ""
-                    button.visibility = View.GONE
+                    option.text.text = ""
+                    option.card.visibility = View.GONE
                 }
             }
         } else if (questions.isNotEmpty()) {
@@ -190,9 +201,20 @@ class FragmentQuiz : Fragment() {
         transaction.commit()
     }
 
+    private fun playSound(resId: Int) {
+        try {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = MediaPlayer.create(requireContext(), resId)
+            mediaPlayer?.setVolume(1.0f, 1.0f)
+            mediaPlayer?.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
-
         mediaPlayer?.release()
         mediaPlayer = null
         _binding = null

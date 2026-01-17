@@ -36,14 +36,7 @@ class QuizViewModel @Inject constructor(
 
     private val _isCorrect = MutableStateFlow<Boolean?>(null)
     val isCorrect = _isCorrect.asStateFlow()
-    // --------------------------------------
 
-    fun loadQuestionsByCategory(category: Category) {
-        viewModelScope.launch {
-            val fetchedQuestions = repository.getQuestionsByCategory(category = category)
-            _questions.value = fetchedQuestions
-        }
-    }
     fun loadQuestions(categoryName: String, difficultyName: String) {
         var category = Category.fromDisplayName(categoryName)
         viewModelScope.launch {
@@ -99,7 +92,6 @@ class QuizViewModel @Inject constructor(
 
     fun startTimer() {
         timer?.cancel()
-        _timeLeft.value = 30
 
         timer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
