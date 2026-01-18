@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA">
+    android:background="#FAFAFA"
+    tools:context=".UI.HomeFragment">
 
     <TextView
         android:id="@+id/tvHi"
@@ -36,11 +37,11 @@
         android:layout_height="48dp"
         android:layout_marginEnd="24dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/profile_image_placeholder"
         app:layout_constraintBottom_toBottomOf="@id/tvExplorer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvHi"
-        app:shapeAppearanceOverlay="@style/CircleImageView" />
+        app:shapeAppearanceOverlay="@style/CircleImageView"
+        tools:src="@tools:sample/avatars" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardDailyChallenge"
@@ -98,12 +99,10 @@
                 android:id="@+id/ivTrophy"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginEnd="4dp"
                 android:src="@drawable/trophy_placeholder"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.491" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPlayNow"
@@ -143,162 +142,69 @@
         android:text="View All"
         android:textColor="#2979FF"
         android:textSize="14sp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="@id/tvTopTopics"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvTopTopics" />
 
+
     <GridLayout
+        android:id="@+id/gridLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
         android:columnCount="2"
         android:rowCount="2"
-        android:useDefaultMargins="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTopTopics">
 
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardBackgroundColor="#E0F7FA"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/science_icon_placeholder" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Science"
-                    android:textColor="#00BCD4"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+            <include android:id="@+id/include_topic_1" layout="@layout/item_home_topic" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardBackgroundColor="#F8BBD0"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/pop_culture_icon_placeholder" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Pop Culture"
-                    android:textColor="#E91E63"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+            <include android:id="@+id/include_topic_2" layout="@layout/item_home_topic" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardBackgroundColor="#C8E6C9"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/geography_icon_placeholder" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Geography"
-                    android:textColor="#4CAF50"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+            <include android:id="@+id/include_topic_3" layout="@layout/item_home_topic" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:layout_columnWeight="1"
             android:layout_margin="8dp"
-            app:cardBackgroundColor="#D1C4E9"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/tech_icon_placeholder" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Tech"
-                    android:textColor="#673AB7"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+            <include android:id="@+id/include_topic_4" layout="@layout/item_home_topic" />
         </com.google.android.material.card.MaterialCardView>
 
     </GridLayout>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        app:itemIconTint="@color/bottom_nav_item_color"
-        app:itemTextColor="@color/bottom_nav_item_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
