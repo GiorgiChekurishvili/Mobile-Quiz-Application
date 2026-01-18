@@ -6,31 +6,36 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.mobilequizapplication.Adapter.CategoryTopicAdapter
 import com.example.mobilequizapplication.Domain.Enum.Category
 import com.example.mobilequizapplication.R
+import com.example.mobilequizapplication.databinding.FragmentCategoriesBinding
 
 class FragmentCategories : Fragment() {
+
+    private var _binding: FragmentCategoriesBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_categories, container, false)
+    ): View {
+        _binding = FragmentCategoriesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val rvCategories = view.findViewById<RecyclerView>(R.id.categoriesRecyclerView)
-        rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
+
         val categoryList = Category.entries
 
-        val adapter = CategoriesAdapter(categoryList) { selectedCategory ->
+
+        val adapter = CategoryTopicAdapter(categoryList) { selectedCategory ->
             navigateToDifficultySelection(selectedCategory)
         }
-
-        rvCategories.adapter = adapter
+        binding.rvCategories.adapter = adapter
     }
 
     private fun navigateToDifficultySelection(category: Category) {
@@ -42,6 +47,10 @@ class FragmentCategories : Fragment() {
             .commit()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     companion object {
         @JvmStatic
