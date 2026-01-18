@@ -57,10 +57,10 @@ class CategoryTopicAdapter(
 
             binding.tvCategoryName.text = category.displayName
 
+
             Glide.with(itemView.context)
-                .load("https://api.dicebear.com/7.x/bottts/png?seed=${category.name}")
+                .load("https://api.dicebear.com/7.x/bottts/png?seed=${category.displayName}")
                 .into(binding.ivCategoryImage)
         }
-
     }
 }
