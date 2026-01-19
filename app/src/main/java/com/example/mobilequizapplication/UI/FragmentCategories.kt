@@ -1,6 +1,8 @@
 package com.example.mobilequizapplication.UI
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +18,10 @@ class FragmentCategories : Fragment() {
     private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
 
+
+    private lateinit var adapter: CategoryTopicAdapter
+    private val fullCategoryList = Category.entries
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,15 +33,48 @@ class FragmentCategories : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupRecyclerView()
+        setupSearch()
+    }
+
+    private fun setupRecyclerView() {
         binding.rvCategories.layoutManager = GridLayoutManager(requireContext(), 2)
 
-        val categoryList = Category.entries
 
-
-        val adapter = CategoryTopicAdapter(categoryList) { selectedCategory ->
+        adapter = CategoryTopicAdapter(fullCategoryList) { selectedCategory ->
             navigateToDifficultySelection(selectedCategory)
         }
         binding.rvCategories.adapter = adapter
+    }
+
+    private fun setupSearch() {
+
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                filterCategories(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun filterCategories(query: String) {
+        val searchText = query.lowercase().trim()
+
+        val filteredList = if (searchText.isEmpty()) {
+            fullCategoryList
+        } else {
+
+            fullCategoryList.filter {
+                it.displayName.lowercase().contains(searchText)
+            }
+        }
+
+
+        adapter.updateList(filteredList)
     }
 
     private fun navigateToDifficultySelection(category: Category) {

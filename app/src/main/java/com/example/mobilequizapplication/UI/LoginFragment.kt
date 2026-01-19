@@ -1,62 +1,63 @@
 package com.example.mobilequizapplication.UI
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.example.mobilequizapplication.R
-import com.example.mobilequizapplication.databinding.FragmentLoginBinding
+import android.os.Bundle
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 
-class LoginFragment : Fragment() {
+class LoginFragment : Fragment(R.layout.fragment_login) {
 
-
-    private var _binding: FragmentLoginBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    private lateinit var auth: FirebaseAuth
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 1. Initialize Firebase
+        auth = FirebaseAuth.getInstance()
 
-        binding.btnLogin.setOnClickListener {
-            val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
+        val etEmail = view.findViewById<TextInputEditText>(R.id.etEmail)
+        val etPassword = view.findViewById<TextInputEditText>(R.id.etPassword)
+        val btnLogin = view.findViewById<MaterialButton>(R.id.btnLogin)
+        val tvRegisterNow = view.findViewById<TextView>(R.id.tvRegisterNow)
 
+        // 2. The Login Logic
+        btnLogin.setOnClickListener {
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
 
+            // Check if empty
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main, HomeFragment.newInstance())
-                .commit()
+            // 3. Ask Firebase: "Is this user real?"
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    // IF SUCCESS: Go to Home
+                    Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
+
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main, HomeFragment()) // Using 'main' ID we fixed earlier
+                        .commit()
+                }
+                .addOnFailureListener { e ->
+                    // IF FAIL: Stay here and show error
+                    Toast.makeText(context, "Login Failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
         }
 
-
-        binding.tvRegisterNow.setOnClickListener {
-
+        // 4. The Register Button Logic
+        tvRegisterNow.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main, RegisterFragment.newInstance())
+                .replace(R.id.main, RegisterFragment())
                 .addToBackStack(null)
                 .commit()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        _binding = null
-    }
-
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = LoginFragment()
     }
 }
