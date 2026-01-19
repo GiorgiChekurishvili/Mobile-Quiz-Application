@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
@@ -131,13 +132,14 @@
         android:id="@+id/btnBackHome"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:layout_marginTop="76dp"
+        android:backgroundTint="#448AFF"
         android:text="Play Another Quiz"
         android:textSize="16sp"
-        android:backgroundTint="#448AFF"
         app:cornerRadius="16dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/cardStats" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
