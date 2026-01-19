@@ -39,7 +39,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    // IF SUCCESS:
+
                     Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
 
 
@@ -53,7 +53,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         .commit()
                 }
                 .addOnFailureListener { e ->
-                    // IF FAIL: Stay here and show error
+
                     Toast.makeText(context, "Login Failed: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }

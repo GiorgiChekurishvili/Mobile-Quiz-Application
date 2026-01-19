@@ -56,7 +56,7 @@ class QuizViewModel @Inject constructor(
                 difficulty = difficultyEnum
             )
 
-            // SAFETY 1: Cut the list to strictly 10 items
+
             _questions.value = fetchedQuestions.take(10)
 
             _currentIndex.value = 0
@@ -89,12 +89,10 @@ class QuizViewModel @Inject constructor(
 
         val currentListSize = _questions.value.size
 
-        // If we have 0 questions, do nothing
+
         if (currentListSize == 0) return
 
-        // SAFETY 2: Strict check.
-        // If we are at Index 9 (Question 10), the next step is FINISH.
-        // We do NOT allow currentIndex to go to 10.
+
         if (_currentIndex.value >= currentListSize - 1) {
             _gameFinished.value = true
         } else {
@@ -107,7 +105,7 @@ class QuizViewModel @Inject constructor(
 
         if (_gameFinished.value || _questions.value.isEmpty()) return
 
-        // Final guard: If index is somehow out of bounds, stop.
+
         if (_currentIndex.value >= _questions.value.size) return
 
         timer = object : CountDownTimer(30000, 1000) {
