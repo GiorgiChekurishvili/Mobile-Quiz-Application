@@ -8,11 +8,11 @@ import com.bumptech.glide.Glide
 import com.example.mobilequizapplication.Domain.Enum.Category
 import com.example.mobilequizapplication.databinding.ItemCategoryTopicBinding
 
+
 class CategoryTopicAdapter(
-    private val categories: List<Category>,
+    private var categories: List<Category>,
     private val onCategoryClick: (Category) -> Unit
 ) : RecyclerView.Adapter<CategoryTopicAdapter.CategoryViewHolder>() {
-
 
     private val colors = listOf(
         "#E0F7FA",
@@ -21,8 +21,13 @@ class CategoryTopicAdapter(
         "#C8E6C9"
     )
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
 
+    fun updateList(newCategories: List<Category>) {
+        categories = newCategories
+        notifyDataSetChanged()
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val binding = ItemCategoryTopicBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -34,7 +39,6 @@ class CategoryTopicAdapter(
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val category = categories[position]
         holder.bind(category)
-
 
         val color = Color.parseColor(colors[position % colors.size])
         holder.binding.cardCategory.setCardBackgroundColor(color)
@@ -48,15 +52,14 @@ class CategoryTopicAdapter(
         init {
             itemView.setOnClickListener {
                 if (adapterPosition != RecyclerView.NO_POSITION) {
+                    // This will now pass the CORRECT category from the filtered list
                     onCategoryClick(categories[adapterPosition])
                 }
             }
         }
 
         fun bind(category: Category) {
-
             binding.tvCategoryName.text = category.displayName
-
 
             Glide.with(itemView.context)
                 .load("https://api.dicebear.com/7.x/bottts/png?seed=${category.displayName}")
