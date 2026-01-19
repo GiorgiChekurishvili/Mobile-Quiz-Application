@@ -26,10 +26,9 @@ class FragmentQuiz : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: QuizViewModel by viewModels()
-
     private var mediaPlayer: MediaPlayer? = null
-
     private var startTime: Long = 0
+
     data class OptionView(
         val card: MaterialCardView,
         val text: TextView,
@@ -49,13 +48,16 @@ class FragmentQuiz : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (activity as? MainActivity)?.hideBottomNavigation()
+
         optionViews = listOf(
-            OptionView(binding.btnOption1, binding.tvOption1, Color.parseColor("#FF80AB")), // Vibrant Pink
-            OptionView(binding.btnOption2, binding.tvOption2, Color.parseColor("#80D8FF")), // Vibrant Blue
-            OptionView(binding.btnOption3, binding.tvOption3, Color.parseColor("#B9F6CA")), // Vibrant Green
-            OptionView(binding.btnOption4, binding.tvOption4, Color.parseColor("#FFFF8D"))  // Vibrant Yellow
+            OptionView(binding.btnOption1, binding.tvOption1, Color.parseColor("#FF80AB")),
+            OptionView(binding.btnOption2, binding.tvOption2, Color.parseColor("#80D8FF")),
+            OptionView(binding.btnOption3, binding.tvOption3, Color.parseColor("#B9F6CA")),
+            OptionView(binding.btnOption4, binding.tvOption4, Color.parseColor("#FFFF8D"))
         )
         startTime = System.currentTimeMillis()
+
         optionViews.forEach { option ->
             option.card.setOnClickListener {
                 viewModel.submitAnswer(option.text.text.toString())
@@ -75,12 +77,11 @@ class FragmentQuiz : Fragment() {
             viewModel.timeLeft.collect { seconds ->
                 binding.quizTimer.progress = seconds
                 binding.tvTimer.text = "00:${seconds.toString().padStart(2, '0')}"
-
                 if (seconds < 5) {
                     binding.quizTimer.setIndicatorColor(Color.RED)
                     binding.tvTimer.setTextColor(Color.RED)
                 } else {
-                    binding.quizTimer.setIndicatorColor(Color.parseColor("#FF9800")) // Orange
+                    binding.quizTimer.setIndicatorColor(Color.parseColor("#FF9800"))
                     binding.tvTimer.setTextColor(Color.parseColor("#2D2D2D"))
                 }
             }
@@ -102,6 +103,14 @@ class FragmentQuiz : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.gameFinished.collectLatest { isFinished ->
+                if (isFinished) {
+                    navigateToResult()
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.score.collectLatest { currentScore ->
                 binding.tvScore.text = "Score: $currentScore"
             }
@@ -119,23 +128,13 @@ class FragmentQuiz : Fragment() {
     }
 
     private fun handleAnswerFeedback(selected: String, isCorrect: Boolean) {
-        if (isCorrect) {
-            playSound(R.raw.correct_sound)
-        } else {
-            playSound(R.raw.wrong_sound)
-        }
+        if (isCorrect) playSound(R.raw.correct_sound) else playSound(R.raw.wrong_sound)
 
         optionViews.forEach { option ->
             option.card.isEnabled = false
-
             if (option.text.text == selected) {
-                if (isCorrect) {
-                    option.card.setCardBackgroundColor(Color.parseColor("#2E7D32"))
-                } else {
-                    option.card.setCardBackgroundColor(Color.parseColor("#C62828"))
-                }
+                option.card.setCardBackgroundColor(if (isCorrect) Color.parseColor("#2E7D32") else Color.parseColor("#C62828"))
                 option.text.setTextColor(Color.WHITE)
-
             } else {
                 option.card.setCardBackgroundColor(Color.parseColor("#EEEEEE"))
                 option.text.setTextColor(Color.parseColor("#BDBDBD"))
@@ -146,35 +145,40 @@ class FragmentQuiz : Fragment() {
             delay(1000)
             resetButtonStyles()
             viewModel.moveToNext()
-            viewModel.startTimer()
+
+            if (!viewModel.gameFinished.value) {
+                viewModel.startTimer()
+            }
         }
     }
 
     private fun resetButtonStyles() {
         optionViews.forEach { option ->
             option.card.isEnabled = true
-
             option.card.setCardBackgroundColor(option.defaultColor)
-
             option.text.setTextColor(Color.parseColor("#2D2D2D"))
         }
     }
 
     private fun updateUI() {
+        (activity as? MainActivity)?.hideBottomNavigation()
         resetButtonStyles()
 
         val questions = viewModel.questions.value
         val index = viewModel.currentIndex.value
 
+
+        if (questions.isNotEmpty() && index >= questions.size) {
+            navigateToResult()
+            return
+        }
+
         if (index < questions.size) {
             val currentQuestion = questions[index]
-
             binding.tvQuestionText.text = currentQuestion.text
-
             binding.tvQuestionCount.text = "QUESTION ${index + 1} OF ${questions.size}"
 
             val answers = currentQuestion.allAnswers.shuffled()
-
             optionViews.forEachIndexed { i, option ->
                 val answer = answers.getOrNull(i)
                 if (answer != null) {
@@ -186,30 +190,24 @@ class FragmentQuiz : Fragment() {
                     option.card.visibility = View.GONE
                 }
             }
-        } else if (questions.isNotEmpty()) {
-            navigateToResult()
         }
     }
 
     private fun navigateToResult() {
         if (!isAdded) return
-
         val endTime = System.currentTimeMillis()
         val durationInMillis = endTime - startTime
-
         val minutes = (durationInMillis / 1000) / 60
         val seconds = (durationInMillis / 1000) % 60
         val timeFormatted = String.format("%02d:%02dm", minutes, seconds)
-
         val finalScore = viewModel.score.value.toString()
         val totalQuestions = viewModel.questions.value.size.toString()
 
         val fragmentResult = FragmentResult.newInstance(finalScore, totalQuestions, timeFormatted)
-
-        val transaction = parentFragmentManager.beginTransaction()
-        transaction.replace(R.id.main, fragmentResult)
-        transaction.addToBackStack(null)
-        transaction.commit()
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.main, fragmentResult)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun playSound(resId: Int) {
@@ -219,9 +217,7 @@ class FragmentQuiz : Fragment() {
             mediaPlayer = MediaPlayer.create(requireContext(), resId)
             mediaPlayer?.setVolume(1.0f, 1.0f)
             mediaPlayer?.start()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) { e.printStackTrace() }
     }
 
     override fun onDestroyView() {
@@ -229,6 +225,7 @@ class FragmentQuiz : Fragment() {
         mediaPlayer?.release()
         mediaPlayer = null
         _binding = null
+        (activity as? MainActivity)?.showBottomNavigation()
     }
 
     companion object {

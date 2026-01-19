@@ -17,7 +17,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Initialize Firebase
+
         auth = FirebaseAuth.getInstance()
 
         val etEmail = view.findViewById<TextInputEditText>(R.id.etEmail)
@@ -25,25 +25,31 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         val btnLogin = view.findViewById<MaterialButton>(R.id.btnLogin)
         val tvRegisterNow = view.findViewById<TextView>(R.id.tvRegisterNow)
 
-        // 2. The Login Logic
+
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
-            // Check if empty
+
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // 3. Ask Firebase: "Is this user real?"
+
             auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    // IF SUCCESS: Go to Home
+                    // IF SUCCESS:
                     Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
 
+
+                    if (activity is MainActivity) {
+                        (activity as MainActivity).showBottomNavigation()
+                    }
+
+                   -
                     parentFragmentManager.beginTransaction()
-                        .replace(R.id.main, HomeFragment()) // Using 'main' ID we fixed earlier
+                        .replace(R.id.fragment_container, HomeFragment())
                         .commit()
                 }
                 .addOnFailureListener { e ->
@@ -52,10 +58,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 }
         }
 
-        // 4. The Register Button Logic
+
         tvRegisterNow.setOnClickListener {
+
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main, RegisterFragment())
+                .replace(R.id.fragment_container, RegisterFragment())
                 .addToBackStack(null)
                 .commit()
         }
