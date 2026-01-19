@@ -18,5 +18,16 @@
 
     <color name="hard_top">#FF5E63</color>
     <color name="hard_bottom">#D9454A</color>
+    <color name="bg_start">#FFF3E0</color> <color name="bg_end">#E0F7FA</color>   <color name="text_dark">#1A1A1A</color>
+    <color name="text_gray">#757575</color>
+
+    <color name="badge_bg">#E3F2FD</color>
+    <color name="badge_text">#448AFF</color>
+
+    <color name="icon_green">#4CAF50</color>
+    <color name="icon_orange">#FF7043</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="nav_selected">#7C4DFF</color> <color name="nav_unselected">#9E9E9E</color>
 
 </resources>
