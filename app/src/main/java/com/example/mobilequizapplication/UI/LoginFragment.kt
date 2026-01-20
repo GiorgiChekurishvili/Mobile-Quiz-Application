@@ -1,16 +1,15 @@
 package com.example.mobilequizapplication.UI
 
-import com.example.mobilequizapplication.R
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
+import com.example.mobilequizapplication.R
 import com.google.firebase.auth.FirebaseAuth
 
-class LoginFragment : Fragment(R.layout.fragment_login) {
+class LoginFragment : Fragment(R.layout.fragment_profile) {
 
     private lateinit var auth: FirebaseAuth
 
@@ -19,52 +18,27 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
 
         auth = FirebaseAuth.getInstance()
-
-        val etEmail = view.findViewById<TextInputEditText>(R.id.etEmail)
-        val etPassword = view.findViewById<TextInputEditText>(R.id.etPassword)
-        val btnLogin = view.findViewById<MaterialButton>(R.id.btnLogin)
-        val tvRegisterNow = view.findViewById<TextView>(R.id.tvRegisterNow)
+        val currentUser = auth.currentUser
 
 
-        btnLogin.setOnClickListener {
-            val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString().trim()
+        val btnEdit = view.findViewById<ImageButton>(R.id.btnEdit)
+        val tvUserName = view.findViewById<TextView>(R.id.tvUserName)
+        val tvLevel = view.findViewById<TextView>(R.id.tvLevel)
 
 
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+        if (currentUser != null) {
 
-
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener {
-
-                    Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
-
-
-                    if (activity is MainActivity) {
-                        (activity as MainActivity).showBottomNavigation()
-                    }
-
-                   -
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, HomeFragment())
-                        .commit()
-                }
-                .addOnFailureListener { e ->
-
-                    Toast.makeText(context, "Login Failed: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
+            tvUserName.text = currentUser.displayName ?: currentUser.email
+        } else {
+            tvUserName.text = "Guest User"
         }
 
 
-        tvRegisterNow.setOnClickListener {
+        tvLevel.text = "Level 12 Quiz Master"
 
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, RegisterFragment())
-                .addToBackStack(null)
-                .commit()
+
+        btnEdit.setOnClickListener {
+            Toast.makeText(requireContext(), "Edit Profile Clicked", Toast.LENGTH_SHORT).show()
         }
     }
 }

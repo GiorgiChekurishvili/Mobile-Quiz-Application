@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
                     is LoginFragment -> binding.bottomNavigationView.visibility = View.GONE
                     is FragmentQuiz -> binding.bottomNavigationView.visibility = View.GONE
                     is RegisterFragment -> binding.bottomNavigationView.visibility = View.GONE
+                    is DifficultyFragment -> binding.bottomNavigationView.visibility = View.GONE
 
 
                     else -> binding.bottomNavigationView.visibility = View.VISIBLE
