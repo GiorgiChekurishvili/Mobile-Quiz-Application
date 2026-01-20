@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.mobilequizapplication.R
-import com.example.mobilequizapplication.databinding.FragmentProfileBinding // This is auto-generated
+import com.example.mobilequizapplication.databinding.FragmentProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
@@ -34,4 +34,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onDestroyView()
         _binding = null
     }
+
+
+    companion object {
+        @JvmStatic
+        fun newInstance() = ProfileFragment()
+    }
+
 }
