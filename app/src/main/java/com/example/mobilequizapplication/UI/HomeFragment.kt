@@ -14,6 +14,7 @@ import com.example.mobilequizapplication.databinding.FragmentHomeBinding
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
+
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -36,21 +37,22 @@ class HomeFragment : Fragment() {
             .into(binding.ivProfile)
 
 
+        binding.ivProfile.setOnClickListener {
+            navigateToProfile()
+        }
+
+
         binding.tvViewAll.setOnClickListener {
             navigateToTopics()
         }
 
 
         binding.btnPlayNow.setOnClickListener {
-
             val randomCategory = Category.entries.random()
             val randomDifficulty = Difficulty.entries.random()
-
-
             navigateToQuiz(randomCategory, randomDifficulty)
         }
     }
-
 
     private fun setupTopTopics() {
 
@@ -66,7 +68,6 @@ class HomeFragment : Fragment() {
 
 
         randomCategories.forEachIndexed { index, category ->
-
             val currentTopicBinding = topicBindings[index]
 
 
@@ -85,11 +86,18 @@ class HomeFragment : Fragment() {
     }
 
 
+    private fun navigateToProfile() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, ProfileFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+
     private fun navigateToTopics() {
         val categoriesFragment = FragmentCategories.newInstance()
-
         parentFragmentManager.beginTransaction()
-            .replace(R.id.main, categoriesFragment)
+            .replace(R.id.fragment_container, categoriesFragment)
             .addToBackStack(null)
             .commit()
     }
@@ -97,9 +105,8 @@ class HomeFragment : Fragment() {
 
     private fun navigateToDifficultySelection(category: Category) {
         val difficultyFragment = DifficultyFragment.newInstance(category.displayName)
-
         parentFragmentManager.beginTransaction()
-            .replace(R.id.main, difficultyFragment)
+            .replace(R.id.fragment_container, difficultyFragment)
             .addToBackStack(null)
             .commit()
     }
@@ -107,13 +114,11 @@ class HomeFragment : Fragment() {
 
     private fun navigateToQuiz(category: Category, difficulty: Difficulty) {
         val quizFragment = FragmentQuiz.newInstance(category.displayName, difficulty.name.lowercase())
-
         parentFragmentManager.beginTransaction()
-            .replace(R.id.main, quizFragment)
+            .replace(R.id.fragment_container, quizFragment)
             .addToBackStack(null)
             .commit()
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -121,6 +126,7 @@ class HomeFragment : Fragment() {
     }
 
     companion object {
+
         @JvmStatic
         fun newInstance() = HomeFragment()
     }
