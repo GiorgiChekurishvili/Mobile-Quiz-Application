@@ -52,7 +52,6 @@ class CategoryTopicAdapter(
         init {
             itemView.setOnClickListener {
                 if (adapterPosition != RecyclerView.NO_POSITION) {
-                    // This will now pass the CORRECT category from the filtered list
                     onCategoryClick(categories[adapterPosition])
                 }
             }
